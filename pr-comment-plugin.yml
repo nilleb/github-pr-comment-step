@@ -1,15 +1,16 @@
 version: '1.0'
 kind: step-type
 metadata:
-  name: kostis-codefresh/github-pr-comment
-  isPublic: true
+  name: gymshark/github-pr-comment
+  isPublic: false
   description: >-
     This pipeline plugin adds comments to GitHub pull requests
   sources:
-    - 'https://github.com/kostis-codefresh/github-pr-comment-step'
+    - 'https://github.com/gymshark/github-pr-comment-step'
   stage: incubating
   maintainers:
     - name: Kostis Kapelonis
+    - name: Wezz Perks
   categories:
     - git
   official: false
@@ -25,7 +26,7 @@ metadata:
         steps:
           add_commenton_current_pr_from_trigger:
             title: Adding comment on this PR
-            type: kostis-codefresh/github-pr-comment
+            type: gymshark/github-pr-comment
             fail_fast: false
             arguments:
               PR_COMMENT_TEXT: 'Your staging environment is ready at http://example.com/${{CF_BRANCH_TAG_NORMALIZED}}/preview'
@@ -36,12 +37,25 @@ metadata:
         steps:
           add_pr_comment_directly:
             title: Adding comment on another PR
-            type: kostis-codefresh/github-pr-comment
+            type: gymshark/github-pr-comment
             fail_fast: false
             arguments:
               PR_COMMENT_TEXT: 'Example comment on PR 45'
               GIT_PROVIDER_NAME: 'github'
               CF_PULL_REQUEST_NUMBER: 45
+    - description: delete-previous-pr-comment
+      workflow:
+        version: '1.0'
+        steps:
+          add_pr_comment_directly:
+            title: Deleting previous comment before adding a new one
+            type: gymshark/github-pr-comment
+            fail_fast: false
+            arguments:
+              PR_COMMENT_TEXT: 'Example comment on PR 45'
+              GIT_PROVIDER_NAME: 'github'
+              CF_PULL_REQUEST_NUMBER: 45
+              DELETE_COMMENT_REGEX: 'Example comment on PR 45'
   latest: true
   version: 1.0.0
 spec:
@@ -72,7 +86,10 @@ spec:
                 "type": "string",
                 "description": "Name of git provider to use from Codefresh integrations screen"
             }
-            
+            "DELETE_COMMENT_REGEX": {
+                "type": "string",
+                "description": "Regex to find previous comments to delete before creating the new comment"
+            }
         }
     }
   steps:
@@ -93,7 +110,7 @@ spec:
          - GITHUB_COMMENT_TYPE=pr
          - GITHUB_PR_ISSUE_NUMBER=${{CF_PULL_REQUEST_NUMBER}}
          - GITHUB_COMMENT=${{PR_COMMENT_TEXT}}
-#         - GITHUB_DELETE_COMMENT_REGEX=staging
+         - GITHUB_DELETE_COMMENT_REGEX=${{DELETE_COMMENT_REGEX}}
        commands:
          - github-commenter
 
