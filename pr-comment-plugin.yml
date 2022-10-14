@@ -1,14 +1,15 @@
 version: '1.0'
 kind: step-type
 metadata:
-  name: gymshark/github-pr-comment
+  name: openclassrooms/github-pr-comment
   isPublic: false
   description: >-
     This pipeline plugin adds comments to GitHub pull requests
   sources:
-    - 'https://github.com/gymshark/github-pr-comment-step'
+    - 'https://github.com/nilleb/github-pr-comment-step'
   stage: incubating
   maintainers:
+    - name: Ivo Bellin Salarin
     - name: Kostis Kapelonis
     - name: Wezz Perks
   categories:
@@ -24,9 +25,9 @@ metadata:
       workflow:
         version: '1.0'
         steps:
-          add_commenton_current_pr_from_trigger:
+          add_comment_on_current_pr_from_trigger:
             title: Adding comment on this PR
-            type: gymshark/github-pr-comment
+            type: openclassrooms/github-pr-comment
             fail_fast: false
             arguments:
               PR_COMMENT_TEXT: 'Your staging environment is ready at http://example.com/${{CF_BRANCH_TAG_NORMALIZED}}/preview'
@@ -37,7 +38,7 @@ metadata:
         steps:
           add_pr_comment_directly:
             title: Adding comment on another PR
-            type: gymshark/github-pr-comment
+            type: openclassrooms/github-pr-comment
             fail_fast: false
             arguments:
               PR_COMMENT_TEXT: 'Example comment on PR 45'
@@ -49,7 +50,7 @@ metadata:
         steps:
           add_pr_comment_directly:
             title: Deleting previous comment before adding a new one
-            type: gymshark/github-pr-comment
+            type: openclassrooms/github-pr-comment
             fail_fast: false
             arguments:
               PR_COMMENT_TEXT: 'Example comment on PR 45'
@@ -57,9 +58,9 @@ metadata:
               CF_PULL_REQUEST_NUMBER: 45
               DELETE_COMMENT_REGEX: 'Example comment on PR 45'
   latest: true
-  version: 1.0.0
+  version: 1.1.0
 spec:
-  arguments: |-
+  arguments: |
     {
         "definitions": {},
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -85,7 +86,7 @@ spec:
             "GIT_PROVIDER_NAME": {
                 "type": "string",
                 "description": "Name of git provider to use from Codefresh integrations screen"
-            }
+            },
             "DELETE_COMMENT_REGEX": {
                 "type": "string",
                 "description": "Regex to find previous comments to delete before creating the new comment"
@@ -113,11 +114,3 @@ spec:
          - GITHUB_DELETE_COMMENT_REGEX=${{DELETE_COMMENT_REGEX}}
        commands:
          - github-commenter
-
-
-
-
-
-
-
-
